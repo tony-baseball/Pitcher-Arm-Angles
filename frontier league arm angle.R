@@ -40,7 +40,7 @@ y <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeight, RelS
   ) %>%
   select(-Opp, -arm_angle_rad)   %>%
   filter(RelHeight <= 7.6 * 12 | RelHeight > .9 * 12) %>%
-  filter(abs(RelSide) <= 5 * 12 ) %>%
+  filter(abs(RelSide) <= 5.5 * 12 ) %>%
   arm_angle_categories()
   
 # %>%
@@ -70,7 +70,8 @@ y_grouped <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeig
   filter(abs(RelSide) <= 5 * 12 ) %>%
   arm_angle_categories() %>%
   group_by(Pitcher, PitcherThrows) %>%
-  summarise(height_in_inches = mean(height_in_inches, na.rm = T),
+  summarise(PitcherTeam = unique(PitcherTeam),
+            height_in_inches = mean(height_in_inches, na.rm = T),
             shoulder_pos = mean(shoulder_pos, na.rm = T),
             release_pos_x = mean(RelSide, na.rm = T),
             release_pos_z = mean(RelHeight, na.rm = T),
@@ -85,8 +86,8 @@ plot_pitcher_arm_angle_yt <- function(pitcher_name, pitcher_data) {
   arm_angle_deg <- round(mean(pitcher$arm_angle, na.rm = T),1)
   p_sholder_pos <- round(mean(pitcher$shoulder_pos, na.rm = T),1) 
   # p_sholder_pos <- round(mean(y$shoulder_pos[y$Pitcher=='Cole Cook'], na.rm = T),1)
-  avg_rel_z <- round(median(pitcher$RelHeight, na.rm = T),2) 
-  avg_rel_x <- -round(median(pitcher$RelSide, na.rm = T),2) 
+  avg_rel_z <- round(mean(pitcher$RelHeight, na.rm = T),2) 
+  avg_rel_x <- -round(mean(pitcher$RelSide, na.rm = T),2) 
   
   
   theta <- seq(0, pi, length.out = 100)  # Change the range to create a semi-circle that is right-side up
@@ -154,4 +155,4 @@ plot_pitcher_arm_angle_yt <- function(pitcher_name, pitcher_data) {
   print(p)
 }
 
-plot_pitcher_arm_angle_yt('Peter Tveite', y)
+plot_pitcher_arm_angle_yt('Michael McAvene', y)
