@@ -91,7 +91,8 @@ grouped_df <- df %>%
             release_pos_x = mean(release_pos_x, na.rm = T),
             release_pos_z = mean(release_pos_z, na.rm = T),
             arm_angle = mean(arm_angle, na.rm = T)
-            )
+            ) %>%
+  arm_angle_categories()
 
 
 # PLOT --------------------------------------------------- ----

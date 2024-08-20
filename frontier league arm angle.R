@@ -141,7 +141,7 @@ plot_pitcher_arm_angle_yt <- function(pitcher_name, pitcher_data) {
   arm_angle <- pitcher$arm_angle[1]
   arm_angle_type <- pitcher$arm_angle_type[1]
   
-  p <- p + annotate("text", x = 0, y = pitcher$shoulder_pos[1] + ifelse(arm_angle > 90, 5, -5), 
+  p <- p + annotate("text", x = 0, y = p_sholder_pos + ifelse(arm_angle > 90, 5, -5), 
                     label = paste(arm_angle_deg, "°"), color = "black", size = 4, hjust = 0.5)
   
   # If an image exists for the pitcher, add it to the plot
@@ -154,4 +154,4 @@ plot_pitcher_arm_angle_yt <- function(pitcher_name, pitcher_data) {
   print(p)
 }
 
-plot_pitcher_arm_angle_yt('Terrance Marin', y)
+plot_pitcher_arm_angle_yt('Peter Tveite', y)
