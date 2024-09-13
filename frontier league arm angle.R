@@ -1,10 +1,9 @@
 # Convert FL heights to inches
 db <- dbConnect(SQLite(),"C:/Users/tdmed/OneDrive/_Shiny/FLASH/flashdb.sqlite")
-rosters <- dbGetQuery(db, 'select * from rosters')
 
 convert_to_inches <- function(height) {
   # Create a named vector of patterns to replace with a common separator
-  replacements <- c("-" = "'", "'" = "'", "''" = "'", "\"" = "", "/" = "'", "\\?" = "'")
+  replacements <- c("-" = "'", "'" = "'", "''" = "'", "\"" = "", "/" = "'", "\\?" = "'", ":" = "'", "\\;" = "'")
   
   # Replace all patterns in the height string
   height <- str_replace_all(height, replacements)
@@ -19,6 +18,19 @@ convert_to_inches <- function(height) {
   return(total_inches)
 }
 
+arm_angle_categories <- function(df) {
+  bins <- c(0, 30, 60, 90, 120, 180)
+  labels <- c('Overhand', 'High Three-Quarters', 'Low Three-Quarters', 'Sidearm', 'Submarine')
+  
+  df <- df %>%
+    mutate(
+      arm_angle_type = cut(arm_angle, breaks = bins, labels = labels, right = FALSE)
+    )
+  
+  return(df)
+}
+rosters <- dbGetQuery(db, 'select * from rosters_')
+
 rosters_ <- rosters %>%
   filter(!grepl('Sudden', NAME)) %>%
   mutate(height_in_inches = convert_to_inches(HEIGHT))
@@ -26,13 +38,13 @@ rosters_ <- rosters %>%
 sum(is.na(rosters_$height_in_inches))
 
 
-y <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeight, RelSide from yak_24' ) %>%
+y <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeight, RelSide from pitch_data where SEASON = 2024' ) %>%
   left_join(rosters_ %>% select(NAME,height_in_inches), by = c('Pitcher' = 'NAME')) %>%
   # group_by(Pitcher) %>%
   mutate(
     RelSide = RelSide * 12,
     RelHeight = RelHeight * 12,
-    shoulder_pos = RelHeight * 0.70,
+    shoulder_pos = height_in_inches * 0.70,
     Adj = RelHeight - shoulder_pos,
     Opp = abs(RelSide),
     arm_angle_rad = atan2(Opp, Adj),
@@ -53,13 +65,13 @@ y <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeight, RelS
 #   ) %>%
 #   arm_angle_categories() 
 
-y_grouped <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeight, RelSide from yak_24' ) %>%
+y_grouped <- dbGetQuery(db, 'select Pitcher, PitcherTeam, PitcherThrows, RelHeight, RelSide from pitch_data' ) %>%
   left_join(rosters_ %>% select(NAME,height_in_inches), by = c('Pitcher' = 'NAME')) %>%
   # group_by(Pitcher) %>%
   mutate(
     RelSide = RelSide * 12,
     RelHeight = RelHeight * 12,
-    shoulder_pos = RelHeight * 0.70,
+    shoulder_pos = height_in_inches * 0.70,
     Adj = RelHeight - shoulder_pos,
     Opp = abs(RelSide),
     arm_angle_rad = atan2(Opp, Adj),
