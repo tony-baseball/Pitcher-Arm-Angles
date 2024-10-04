@@ -2,3 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
+data/espnPlayerInfo.csv
+data/overallArmAngles.csv
+data/pitchArmAngles.csv
+data/playerInfo.csv
+data/teams.csv
+arm_angle.ipynb
+plot*.R
+player_img/
+python_to_r.R
+frontier league arm angle.R
