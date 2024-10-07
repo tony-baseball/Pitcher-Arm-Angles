@@ -8,7 +8,7 @@ library(ggrepel)
 library(car)
 
 # PREP FUNCTIONS ---------------------------------------------------------------
-# calculate arm angle
+# calculate arm angle function
 arm_angle_calc <- function(data_frame) {
   
   data_frame <- data_frame %>%

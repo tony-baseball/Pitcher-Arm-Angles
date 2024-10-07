@@ -12,7 +12,7 @@ pitcher_plot <- function(pitcher_name, plot_type) {
   
   
   if(pitcher_name %in% pitch_data$Pitcher){
-    # INDIVIDUAL PITCHER PITCH DATA
+    # INDIVIDUAL PITCHER PITCH DATA -----
     p <- pitch_data %>%
       filter(Pitcher == pitcher_name) %>%
       filter(TaggedPitchType != '' | is.na(TaggedPitchType)) %>% 
@@ -20,7 +20,7 @@ pitcher_plot <- function(pitcher_name, plot_type) {
              TaggedPitchType = dplyr::recode(TaggedPitchType, Fastball = "FB", Curveball = 'CB', Sinker = 'SI', Slider = 'SL',
                                              Cutter = 'CT', Changeup = 'CH', Other = 'OT', Knuckleball = 'KN', Splitter = 'SPL'  ) ) 
     
-    # INDIVIDUAL PITCHER AVERAGE PITCH METRICS 
+    # INDIVIDUAL PITCHER AVERAGE PITCH METRICS ----
     p_mean <- suppressMessages(
       pitch_data %>%
         filter(Pitcher == pitcher_name) %>%
@@ -35,12 +35,12 @@ pitcher_plot <- function(pitcher_name, plot_type) {
                scaled_usage = (usage - min(usage)) / (max(usage) - min(usage)) * (40 - 20) + 20)
     )
     
-    # LEAGUE AVERAGE PITCH METRICS MATCHING INDIVIDUAL PITCHERS ARSENAL
+    # LEAGUE AVERAGE PITCH METRICS MATCHING INDIVIDUAL PITCHERS ARSENAL----
     p_lg <- pitch_data_lg_avg %>%
       filter(PitcherThrows %in% p_mean$PitcherThrows) %>%
       filter(TaggedPitchType %in% p_mean$TaggedPitchType)
     
-    # INDIVIDUAL PITCHER AVERAGE ARM ANGLE AND RELEASE DATA
+    # INDIVIDUAL PITCHER AVERAGE ARM ANGLE AND RELEASE DATA----
     p_arm <- suppressMessages(
       pitch_data %>%
         filter(Pitcher == pitcher_name) %>%
@@ -55,6 +55,7 @@ pitcher_plot <- function(pitcher_name, plot_type) {
                   arm_angle_savant = median(arm_angle_savant, na.rm = T)
         ) %>%
         arm_angle_categories() %>%
+        # This is to scale the arm angle line/point to fit into the savant and movement plots
         mutate(relx = case_when(
           release_pos_x > 20 ~ 20,
           release_pos_z > 20 ~ 20 * (release_pos_x / (release_pos_z - shoulder_pos)),
@@ -67,7 +68,7 @@ pitcher_plot <- function(pitcher_name, plot_type) {
         ),
         arm_path = 'Arm Path'
         ) %>%
-        mutate(arm_length = height_inches * .39,
+        mutate(arm_length = height_inches * .39, # Average arm length is roughlt 39% of height
                slope = (release_pos_z - shoulder_pos) / (release_pos_x - 0),
                arm_dist = sqrt((release_pos_x - 0)^2 + (release_pos_z - shoulder_pos)^2),
                arm_scale = arm_length / arm_dist,
@@ -76,20 +77,21 @@ pitcher_plot <- function(pitcher_name, plot_type) {
                  between(arm_angle_savant, 10, 40)  ~ 0,
                  arm_angle_savant < 10 ~ 0,
                ),
-               should_y = case_when(
+               should_y = case_when( # changes the height of the shoulder based on which arm angle / arm angle png 
                  arm_angle_savant >= 40 ~ 62.5,
                  between(arm_angle_savant, 10, 40)  ~ 56,
                  arm_angle_savant < 10 ~ 45,
                  
                ),
-               rel_x = should_x + (arm_scale * (release_pos_x - should_x)), 
-               rel_z = shoulder_pos + (arm_scale * (release_pos_z - shoulder_pos)) + should_y - (shoulder_pos),
+               rel_x = should_x + (arm_scale * (release_pos_x - should_x)), # calculates new release point along the original slope
+               rel_z = shoulder_pos + (arm_scale * (release_pos_z - shoulder_pos)) + should_y - (shoulder_pos), # calculates new release point along the original slope
                arm_path = 'Arm Path'
         )
     )
     
     p <- p  %>% filter(!is.na(HorzBreak) & !is.na(InducedVertBreak))
     
+    # this sets the pitch colors in the plotly versions of the code
     p_c <- pitch_colors %>%
       filter(PitchCode %in% p_mean$TaggedPitchType)
     

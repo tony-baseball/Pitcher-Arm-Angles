@@ -9,10 +9,11 @@
   library(car)
 }
 # PREP FUNCTIONS ---------------------------------------------------------------
+# load the prep functions first
 source('functions.R')
 
 # DATA -------------------------------------------------------------------------
-
+# now load the data
 # rosters csv
 rosters <- read.csv('data/rosters.csv') %>%
   mutate(height_inches = convert_to_inches(HEIGHT),
@@ -32,9 +33,12 @@ pitch_data_lg_avg <- read.csv('data/league_avg.csv')%>%
 
 
 # WORKING FUNCTION -------------------------------------------------------------
+# this is the plot function where all you need to pass is pitcher name and plot type
 source('function_plot.R')
 
 # plot_type <- c('movement', 'savant', 'arm_angle')
+
+# pitcher_plot (Pitcher_Name, plot_type)
 
 pitcher_plot('Cole Cook', 'arm_angle') 
 
