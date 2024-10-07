@@ -5,6 +5,7 @@ library(ggplot2)
 library(plotly)
 library(ggimage)
 library(ggrepel)
+library(car)
 
 # PREP FUNCTIONS ---------------------------------------------------------------
 # calculate arm angle
@@ -12,8 +13,8 @@ arm_angle_calc <- function(data_frame) {
   
   data_frame <- data_frame %>%
     mutate(height_inches = rosters$height_inches[match(Pitcher, rosters$NAME)],
-           height_inches = ifelse(is.na(height_inches), mean(rosters$height_inches[grepl("P",rosters$POSITION)], na.rm = T), 72
-           )
+           height_inches = ifelse(is.na(height_inches), mean(rosters$height_inches[grepl("P",rosters$POSITION)], na.rm = T), height_inches),
+           arm_length = height_inches * .39
     ) %>%
     mutate(
       RelSide_in = RelSide * 12,
@@ -82,6 +83,21 @@ circleFun <- function(center = c(0, 0), radius = 24, npoints = 100) {
   )
 }
 
+# creats a circle for the SAVANT plot
+circle <- circleFun(center = c(0, 0), radius = 24)
+
+{ # code for the pitcher's mound in the ARM ANGLE plot
+  df <- data.frame(x = 0.5, y = 0)
+  theta <- seq(0, pi, length.out = 100)  # Change the range to create a semi-circle that is right-side up for the mound!
+  r <- 40  # The horizontal range from -40 to 40 for the mound!
+  # Calculate the x and y coordinates
+  mound <- data.frame(
+    x = r * cos(theta),
+    y = 4 * sin(theta)
+  )
+}
+
+# pitch colors table for SAVANT and MOVEMENT
 pitch_colors = data.frame(TaggedPitchType = c("Fastball", "Sinker", "Cutter", "Curveball", 
                                               "Slider", "Changeup", "Splitter", "Knuckleball", "Other"),
                           PitchCode = c('FB', 'SI', 'CT', 'CB', 'SL', 'CH', 'SPL', 'KN', 'OT'),
