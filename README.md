@@ -17,3 +17,4 @@ This repo works to infer arm angles for Frontier League pitchers using their hei
 
 
 
+One issue is the reliability and accuracy of Yakkertech data. There are a lot of pitches where release heights are over 8 feet (up to 50 feet) and below 1 foot (fdr non submarine pitchers. Relesase sides and extension also have these inaccuracies. 
