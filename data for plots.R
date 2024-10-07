@@ -25,7 +25,7 @@ rosters <- dbGetQuery(db, 'select * from rosters_') %>%
 # write.csv(dbGetQuery(db, 'select * from rosters_ where SEASON = 2024 and TEAM like "%Boomer%" and NAME not like "%Sudden%"'), 'rosters.csv', row.names = F, na='' )
 # pitch data, change to sample csv
 p <- dbGetQuery(db, 'select Date, Pitcher, PitcherThrows, PitcherTeam, TaggedPitchType, RelSpeed, InducedVertBreak, HorzBreak, SpinAxis,
-                RelHeight, RelSide, Extension, SpinRate, yt_Efficiency, HomeTeamCode
+                RelHeight, RelSide, Extension, SpinRate, yt_Efficiency, HomeTeamCode, height_inches
                 from pitch_data where PitcherTeam like "%Boomers%" and Season = 2024 and Date < "2024-06-15"')
 
 # write.csv(p, 'pitch_data_raw.csv', row.names = F, na='')

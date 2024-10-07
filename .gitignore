@@ -3,6 +3,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.Rproj
 data/espnPlayerInfo.csv
 data/overallArmAngles.csv
 data/pitchArmAngles.csv
